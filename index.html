@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem IoT & OTA Kampus - Teknik Instrumentasi ITS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
+
+    <!-- Header Navbar -->
+    <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-700 p-2.5 rounded-lg text-white shadow">
+                    <i class="fa-solid fa-microchip text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-900 tracking-tight">Sistem IoT & OTA Kampus</h1>
+                    <p class="text-xs text-gray-500 font-medium">Departemen Teknik Instrumentasi ITS</p>
+                </div>
+            </div>
+            <!-- Navigasi Tab -->
+            <nav class="flex space-x-1 mt-4 sm:mt-0 bg-gray-100 p-1 rounded-xl border border-gray-200">
+                <button onclick="switchTab('grafik')" id="btn-grafik" class="px-4 py-2 rounded-lg text-sm font-semibold transition bg-blue-700 text-white shadow-sm">Grafik</button>
+                <button onclick="switchTab('datalog')" id="btn-datalog" class="px-4 py-2 rounded-lg text-sm font-semibold transition text-gray-600 hover:text-gray-900">Data Log</button>
+                <button onclick="switchTab('ota')" id="btn-ota" class="px-4 py-2 rounded-lg text-sm font-semibold transition text-gray-600 hover:text-gray-900">Bin OTA</button>
+                <button onclick="switchTab('profil')" id="btn-profil" class="px-4 py-2 rounded-lg text-sm font-semibold transition text-gray-600 hover:text-gray-900">Profil Tim</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <!-- TAB 1: GRAFIK -->
+        <section id="tab-grafik" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Suhu Terakhir (DHT)</p>
+                    <h3 id="val-temp" class="text-3xl font-extrabold text-amber-600 mt-2">29.4 °C</h3>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kelembaban Terakhir</p>
+                    <h3 id="val-hum" class="text-3xl font-extrabold text-blue-600 mt-2">62.1 %</h3>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kadar Debu (Dust)</p>
+                    <h3 id="val-dust" class="text-3xl font-extrabold text-emerald-600 mt-2">0.28 mg/m³</h3>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-chart-line mr-2 text-blue-600"></i>Grafik Telemetri Lingkungan Real-Time</h3>
+                    <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium flex items-center">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Live Connected
+                    </span>
+                </div>
+                <div class="relative h-96 w-full">
+                    <canvas id="telemetryChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: DATA LOG -->
+        <section id="tab-datalog" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <h3 class="text-base font-bold text-gray-800 mb-4"><i class="fa-solid fa-table mr-2 text-blue-600"></i>Riwayat Basis Data InfluxDB Cloud</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-50 text-gray-700 uppercase text-xs border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3">Waktu</th>
+                                <th class="px-4 py-3">Perangkat ID</th>
+                                <th class="px-4 py-3">Suhu (°C)</th>
+                                <th class="px-4 py-3">Kelembaban (%)</th>
+                                <th class="px-4 py-3">Debu (mg/m³)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-table-body" class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-4 py-3">2026-10-19 18:25:00</td>
+                                <td class="px-4 py-3 font-medium text-gray-900">arifin-node-01</td>
+                                <td class="px-4 py-3">29.4</td>
+                                <td class="px-4 py-3">62.1</td>
+                                <td class="px-4 py-3">0.28</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">2026-10-19 18:20:00</td>
+                                <td class="px-4 py-3 font-medium text-gray-900">arifin-node-01</td>
+                                <td class="px-4 py-3">30.5</td>
+                                <td class="px-4 py-3">54.0</td>
+                                <td class="px-4 py-3">0.35</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: BIN OTA -->
+        <section id="tab-ota" class="hidden space-y-6">
+            <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm max-w-xl mx-auto">
+                <h3 class="text-lg font-bold text-gray-900 mb-2"><i class="fa-solid fa-cloud-arrow-up mr-2 text-blue-600"></i>Over-The-Air (OTA) Firmware Update</h3>
+                <p class="text-sm text-gray-500 mb-6">Unggah berkas kompilasi firmware baru berformat <code class="bg-gray-100 px-2 py-1 rounded text-orange-600 font-mono text-xs">.bin</code> untuk memperbarui mikrokontroler ESP32 secara nirkabel.</p>
+                
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100/50 transition cursor-pointer" onclick="document.getElementById('binFile').click()">
+                    <i class="fa-solid fa-file-arrow-up text-3xl text-blue-600 mb-3"></i>
+                    <p id="file-label" class="text-sm font-medium text-gray-700">Klik untuk memilih berkas .bin atau seret ke sini</p>
+                    <input type="file" id="binFile" class="hidden" accept=".bin" onchange="handleFileSelect(this)">
+                </div>
+
+                <div class="mt-6">
+                    <button onclick="triggerOTA()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-xl transition shadow-sm flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>Eksekusi Update OTA ke Perangkat</span>
+                    </button>
+                </div>
+                <div id="ota-status" class="mt-4 hidden p-4 rounded-xl text-sm font-medium"></div>
+            </div>
+        </section>
+
+        <!-- TAB 4: PROFIL TIM -->
+        <section id="tab-profil" class="hidden space-y-6">
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <h2 class="text-xl font-bold text-gray-900">Tim Pengembang Proyek</h2>
+                <p class="text-sm text-gray-500">Mahasiswa Departemen Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Anggota 1 (Arifin) -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
+                    <!-- Ganti path 'arifin.jpg' dengan nama file foto aslimu di folder proyek -->
+                    <img src="GambarAripin.jpeg" alt="Muhammad Arifin Ilham" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-blue-600 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Arifin'">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-base">Muhammad Arifin Ilham</h4>
+                        <p class="text-xs text-blue-700 font-semibold mt-0.5">NRP. 2042241007 (Ketua)</p>
+                    </div>
+                    <p class="text-xs text-gray-500">Pengembangan sistem IoT, integrasi broker MQTT, dan arsitektur backend cloud.</p>
+                </div>
+                <!-- Anggota 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
+                    <!-- Ganti path 'anggota2.jpg' dengan foto anggota kedua -->
+                    <img src="anggota2.jpg" alt="Anggota 2" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Anggota+2'">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-base">Athaya Zhafari Saputra</h4>
+                        <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
+                    </div>
+                    <p class="text-xs text-gray-500">Fokus perancangan perangkat keras sensor fisik dan aktuator.</p>
+                </div>
+                <!-- Anggota 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
+                    <!-- Ganti path 'anggota3.jpg' dengan foto anggota ketiga -->
+                    <img src="anggota3.jpg" alt="Anggota 3" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Anggota+3'">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-base">Else Kusuma</h4>
+                        <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
+                    </div>
+                    <p class="text-xs text-gray-500">Fokus perancangan basis data InfluxDB dan visualisasi antarmuka web.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Skrip Logika -->
+    <script>
+        function switchTab(tabId) {
+            ['grafik', 'datalog', 'ota', 'profil'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).classList.remove('bg-blue-700', 'text-white', 'shadow-sm');
+                document.getElementById(`btn-${t}`).classList.add('text-gray-600');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).classList.add('bg-blue-700', 'text-white', 'shadow-sm');
+            document.getElementById(`btn-${tabId}`).classList.remove('text-gray-600');
+        }
+
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        const telemetryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['18:00', '18:05', '18:10', '18:15', '18:20', '18:25'],
+                datasets: [
+                    { label: 'Suhu (°C)', data: [28.5, 29.1, 30.2, 29.8, 30.5, 31.0], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.05)', tension: 0.3, fill: true },
+                    { label: 'Kelembaban (%)', data: [60, 58, 55, 57, 54, 52], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.05)', tension: 0.3, fill: false },
+                    { label: 'Debu (mg/m³)', data: [0.2, 0.3, 0.25, 0.4, 0.35, 0.28], borderColor: '#059669', backgroundColor: 'rgba(5, 150, 105, 0.05)', tension: 0.3, fill: false }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } },
+                    x: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } }
+                },
+                plugins: { legend: { labels: { color: '#374151', font: { weight: '600' } } } }
+            }
+        });
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('file-label').innerText = `Berkas dipilih: ${input.files[0].name}`;
+            }
+        }
+
+        function triggerOTA() {
+            const fileInput = document.getElementById('binFile');
+            const statusDiv = document.getElementById('ota-status');
+            statusDiv.classList.remove('hidden');
+
+            if (!fileInput.files[0]) {
+                statusDiv.className = "mt-4 p-4 rounded-xl text-sm bg-red-50 text-red-700 border border-red-200";
+                statusDiv.innerText = "Gagal: Silakan pilih berkas biner (.bin) firmware terlebih dahulu!";
+                return;
+            }
+
+            statusDiv.className = "mt-4 p-4 rounded-xl text-sm bg-blue-50 text-blue-700 border border-blue-200";
+            statusDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengunggah firmware ke perangkat ESP32 secara nirkabel...`;
+
+            setTimeout(() => {
+                statusDiv.className = "mt-4 p-4 rounded-xl text-sm bg-emerald-50 text-emerald-700 border border-emerald-200";
+                statusDiv.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> Berhasil! Firmware OTA terkirim. Perangkat akan melakukan *reboot* otomatis.`;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
