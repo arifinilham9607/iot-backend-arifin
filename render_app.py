@@ -8,15 +8,12 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 app = Flask(__name__)
-CORS(app) # Wajib untuk mengizinkan Vercel membaca API
+CORS(app)
 
 INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN")
 INFLUX_ORG = "ITS"
 INFLUX_BUCKET = "arifin_iot_db"
-
-if not INFLUX_TOKEN:
-    print("WARNING: Token InfluxDB tidak ditemukan. Data tidak akan tersimpan.")
 
 influx_client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
 write_api = influx_client.write_api(write_options=SYNCHRONOUS)
@@ -28,10 +25,10 @@ TOPIC = "dt/arifin-its-2026/telemetry"
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("[MQTT] Terhubung ke HiveMQ Cloud Broker!")
+        print("[MQTT] Terhubung ke HiveMQ Cloud Broker!", flush=True)
         client.subscribe(TOPIC)
     else:
-        print(f"[MQTT] Gagal terhubung, rc={rc}")
+        print(f"[MQTT] Gagal terhubung, rc={rc}", flush=True)
 
 def on_message(client, userdata, msg):
     try:
@@ -39,12 +36,12 @@ def on_message(client, userdata, msg):
         point = Point("environment_monitoring").tag("device", data.get("device_id", "unknown"))
         for sensor in data.get("data", []):
             point.field(sensor.get("sensor"), float(sensor.get("value")))
-
+        
         if INFLUX_TOKEN:
             write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
-            print(f" -> [INFLUXDB] Data Seq {data.get('seq_num')} disimpan!")
+            print(f" -> [INFLUXDB] Data Seq {data.get('seq_num')} disimpan!", flush=True)
     except Exception as e:
-        print(f"[ERROR] {e}")
+        print(f"[ERROR] {e}", flush=True)
 
 def start_mqtt():
     mqtt_client = mqtt.Client(client_id="Python-Render-API")
@@ -55,15 +52,18 @@ def start_mqtt():
     mqtt_client.connect(BROKER, PORT, 60)
     mqtt_client.loop_forever()
 
+# Inisialisasi Thread MQTT di tingkat teratas agar terbaca oleh Gunicorn
+mqtt_thread = threading.Thread(target=start_mqtt)
+mqtt_thread.daemon = True
+mqtt_thread.start()
+
 @app.route('/health')
 def health_check():
     return jsonify({"status": "Aplikasi MQTT & Flask aktif", "author": "Arifin ITS"})
 
-# --- ENDPOINT BARU UNTUK VERCEL ---
 @app.route('/api/data')
 def get_data():
     try:
-        # Mengambil 10 data terakhir dari InfluxDB
         query = f'''
         from(bucket: "{INFLUX_BUCKET}")
           |> range(start: -1h)
@@ -73,7 +73,7 @@ def get_data():
           |> limit(n: 10)
         '''
         tables = query_api.query(query, org=INFLUX_ORG)
-
+        
         results = []
         for table in tables:
             for record in table.records:
@@ -89,8 +89,5 @@ def get_data():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    mqtt_thread = threading.Thread(target=start_mqtt)
-    mqtt_thread.daemon = True
-    mqtt_thread.start()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
