@@ -122,7 +122,6 @@
                 <p class="text-sm text-gray-500">Mahasiswa Departemen Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Anggota 1 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
                     <img src="arifin.jpg" alt="Muhammad Arifin Ilham" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-blue-600 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Arifin'">
                     <div>
@@ -131,18 +130,16 @@
                     </div>
                     <p class="text-xs text-gray-500">Pengembangan sistem IoT, integrasi broker MQTT, dan arsitektur backend cloud.</p>
                 </div>
-                <!-- Anggota 2 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
-                    <img src="Athaya.jpg" alt="Athaya Zhafari Saputra" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Athaya'">
+                    <img src="anggota2.jpg" alt="Athaya Zhafari Saputra" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Athaya'">
                     <div>
                         <h4 class="font-bold text-gray-900 text-base">Athaya Zhafari Saputra</h4>
                         <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
                     </div>
                     <p class="text-xs text-gray-500">Fokus perancangan perangkat keras sensor fisik dan aktuator.</p>
                 </div>
-                <!-- Anggota 3 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
-                    <img src="Else.jpg" alt="Else Kusuma" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Else'">
+                    <img src="anggota3.jpg" alt="Else Kusuma" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Else'">
                     <div>
                         <h4 class="font-bold text-gray-900 text-base">Else Kusuma</h4>
                         <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
@@ -156,7 +153,6 @@
 
     <!-- Skrip Logika -->
     <script>
-        // Navigasi Tab
         function switchTab(tabId) {
             ['grafik', 'datalog', 'ota', 'profil'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -168,7 +164,6 @@
             document.getElementById(`btn-${tabId}`).classList.remove('text-gray-600');
         }
 
-        // Inisialisasi Chart.js (Kosong di awal)
         const ctx = document.getElementById('telemetryChart').getContext('2d');
         const telemetryChart = new Chart(ctx, {
             type: 'line',
@@ -183,7 +178,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 0 }, // Matikan animasi agar pembaruan real-time lebih mulus
+                animation: { duration: 0 },
                 scales: {
                     y: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } },
                     x: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } }
@@ -192,10 +187,8 @@
             }
         });
 
-        // Konfigurasi Endpoint Render Anda
         const API_URL = "https://iot-backend-arifin.onrender.com/api/data";
 
-        // Fungsi Penarik Data Real-Time
         async function fetchRealTimeData() {
             try {
                 const response = await fetch(API_URL);
@@ -203,18 +196,16 @@
                 const data = await response.json();
                 
                 if (data.length > 0) {
-                    // Nyalakan Indikator Live
-                    document.getElementById('live-indicator').classList.replace('bg-gray-400', 'bg-emerald-500');
-                    document.getElementById('live-indicator').classList.add('animate-pulse');
+                    const liveIndicator = document.getElementById('live-indicator');
+                    liveIndicator.classList.remove('bg-gray-400', 'bg-red-500');
+                    liveIndicator.classList.add('bg-emerald-500', 'animate-pulse');
                     document.getElementById('live-text').innerText = "Live Connected";
 
-                    // Update Indikator Angka Teratas (Data Paling Baru/Index 0)
                     const latest = data[0];
                     document.getElementById('val-temp').innerText = (latest.dht_temp || 0).toFixed(1) + " °C";
                     document.getElementById('val-hum').innerText = (latest.dht_hum || 0).toFixed(1) + " %";
                     document.getElementById('val-dust').innerText = (latest.sharp_dust || 0).toFixed(2) + " mg/m³";
 
-                    // Update Tabel Log (Maksimal 10 Baris)
                     const tableBody = document.getElementById('log-table-body');
                     tableBody.innerHTML = '';
                     data.forEach(row => {
@@ -229,10 +220,8 @@
                         `;
                     });
 
-                    // Update Grafik (Membalik urutan agar data lama di kiri, baru di kanan)
                     const chartData = [...data].reverse();
                     telemetryChart.data.labels = chartData.map(d => {
-                        // Memotong string waktu untuk hanya menampilkan Jam:Menit:Detik
                         const parts = d.time.split(' ');
                         return parts.length > 1 ? parts[1] : d.time;
                     });
@@ -243,17 +232,16 @@
                 }
             } catch (error) {
                 console.error("Gagal menarik data dari API:", error);
-                document.getElementById('live-indicator').classList.replace('bg-emerald-500', 'bg-red-500');
-                document.getElementById('live-indicator').classList.remove('animate-pulse');
+                const liveIndicator = document.getElementById('live-indicator');
+                liveIndicator.classList.remove('bg-emerald-500', 'animate-pulse');
+                liveIndicator.classList.add('bg-red-500');
                 document.getElementById('live-text').innerText = "Koneksi Terputus";
             }
         }
 
-        // Panggil pertama kali, lalu jalankan setiap 5 detik
         fetchRealTimeData();
         setInterval(fetchRealTimeData, 5000);
 
-        // Handler OTA (Tetap Statis)
         function handleFileSelect(input) {
             if (input.files && input.files[0]) {
                 document.getElementById('file-label').innerText = `Berkas dipilih: ${input.files[0].name}`;
