@@ -43,15 +43,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Suhu Terakhir (DHT)</p>
-                    <h3 id="val-temp" class="text-3xl font-extrabold text-amber-600 mt-2">29.4 °C</h3>
+                    <h3 id="val-temp" class="text-3xl font-extrabold text-amber-600 mt-2">-- °C</h3>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kelembaban Terakhir</p>
-                    <h3 id="val-hum" class="text-3xl font-extrabold text-blue-600 mt-2">62.1 %</h3>
+                    <h3 id="val-hum" class="text-3xl font-extrabold text-blue-600 mt-2">-- %</h3>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kadar Debu (Dust)</p>
-                    <h3 id="val-dust" class="text-3xl font-extrabold text-emerald-600 mt-2">0.28 mg/m³</h3>
+                    <h3 id="val-dust" class="text-3xl font-extrabold text-emerald-600 mt-2">-- mg/m³</h3>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-chart-line mr-2 text-blue-600"></i>Grafik Telemetri Lingkungan Real-Time</h3>
                     <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium flex items-center">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Live Connected
+                        <span id="live-indicator" class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span> <span id="live-text">Menunggu Data...</span>
                     </span>
                 </div>
                 <div class="relative h-96 w-full">
@@ -85,18 +85,7 @@
                         </thead>
                         <tbody id="log-table-body" class="divide-y divide-gray-100">
                             <tr>
-                                <td class="px-4 py-3">2026-10-19 18:25:00</td>
-                                <td class="px-4 py-3 font-medium text-gray-900">arifin-node-01</td>
-                                <td class="px-4 py-3">29.4</td>
-                                <td class="px-4 py-3">62.1</td>
-                                <td class="px-4 py-3">0.28</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3">2026-10-19 18:20:00</td>
-                                <td class="px-4 py-3 font-medium text-gray-900">arifin-node-01</td>
-                                <td class="px-4 py-3">30.5</td>
-                                <td class="px-4 py-3">54.0</td>
-                                <td class="px-4 py-3">0.35</td>
+                                <td colspan="5" class="px-4 py-4 text-center text-gray-500">Menghubungkan ke server backend...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -133,10 +122,9 @@
                 <p class="text-sm text-gray-500">Mahasiswa Departemen Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Anggota 1 (Arifin) -->
+                <!-- Anggota 1 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
-                    <!-- Ganti path 'arifin.jpg' dengan nama file foto aslimu di folder proyek -->
-                    <img src="GambarAripin.jpeg" alt="Muhammad Arifin Ilham" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-blue-600 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Arifin'">
+                    <img src="arifin.jpg" alt="Muhammad Arifin Ilham" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-blue-600 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Arifin'">
                     <div>
                         <h4 class="font-bold text-gray-900 text-base">Muhammad Arifin Ilham</h4>
                         <p class="text-xs text-blue-700 font-semibold mt-0.5">NRP. 2042241007 (Ketua)</p>
@@ -145,8 +133,7 @@
                 </div>
                 <!-- Anggota 2 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
-                    <!-- Ganti path 'anggota2.jpg' dengan foto anggota kedua -->
-                    <img src="anggota2.jpg" alt="Anggota 2" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Anggota+2'">
+                    <img src="Athaya.jpg" alt="Athaya Zhafari Saputra" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Athaya'">
                     <div>
                         <h4 class="font-bold text-gray-900 text-base">Athaya Zhafari Saputra</h4>
                         <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
@@ -155,8 +142,7 @@
                 </div>
                 <!-- Anggota 3 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 text-center space-y-4 shadow-sm">
-                    <!-- Ganti path 'anggota3.jpg' dengan foto anggota ketiga -->
-                    <img src="anggota3.jpg" alt="Anggota 3" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Anggota+3'">
+                    <img src="Else.jpg" alt="Else Kusuma" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-gray-300 shadow-inner" onerror="this.src='https://via.placeholder.com/150?text=Else'">
                     <div>
                         <h4 class="font-bold text-gray-900 text-base">Else Kusuma</h4>
                         <p class="text-xs text-gray-600 font-semibold mt-0.5">NRP. 2042241019</p>
@@ -170,6 +156,7 @@
 
     <!-- Skrip Logika -->
     <script>
+        // Navigasi Tab
         function switchTab(tabId) {
             ['grafik', 'datalog', 'ota', 'profil'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -181,20 +168,22 @@
             document.getElementById(`btn-${tabId}`).classList.remove('text-gray-600');
         }
 
+        // Inisialisasi Chart.js (Kosong di awal)
         const ctx = document.getElementById('telemetryChart').getContext('2d');
         const telemetryChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['18:00', '18:05', '18:10', '18:15', '18:20', '18:25'],
+                labels: [],
                 datasets: [
-                    { label: 'Suhu (°C)', data: [28.5, 29.1, 30.2, 29.8, 30.5, 31.0], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.05)', tension: 0.3, fill: true },
-                    { label: 'Kelembaban (%)', data: [60, 58, 55, 57, 54, 52], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.05)', tension: 0.3, fill: false },
-                    { label: 'Debu (mg/m³)', data: [0.2, 0.3, 0.25, 0.4, 0.35, 0.28], borderColor: '#059669', backgroundColor: 'rgba(5, 150, 105, 0.05)', tension: 0.3, fill: false }
+                    { label: 'Suhu (°C)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.05)', tension: 0.3, fill: true },
+                    { label: 'Kelembaban (%)', data: [], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.05)', tension: 0.3, fill: false },
+                    { label: 'Debu (mg/m³)', data: [], borderColor: '#059669', backgroundColor: 'rgba(5, 150, 105, 0.05)', tension: 0.3, fill: false }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: { duration: 0 }, // Matikan animasi agar pembaruan real-time lebih mulus
                 scales: {
                     y: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } },
                     x: { grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } }
@@ -203,6 +192,68 @@
             }
         });
 
+        // Konfigurasi Endpoint Render Anda
+        const API_URL = "https://iot-backend-arifin.onrender.com/api/data";
+
+        // Fungsi Penarik Data Real-Time
+        async function fetchRealTimeData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                
+                if (data.length > 0) {
+                    // Nyalakan Indikator Live
+                    document.getElementById('live-indicator').classList.replace('bg-gray-400', 'bg-emerald-500');
+                    document.getElementById('live-indicator').classList.add('animate-pulse');
+                    document.getElementById('live-text').innerText = "Live Connected";
+
+                    // Update Indikator Angka Teratas (Data Paling Baru/Index 0)
+                    const latest = data[0];
+                    document.getElementById('val-temp').innerText = (latest.dht_temp || 0).toFixed(1) + " °C";
+                    document.getElementById('val-hum').innerText = (latest.dht_hum || 0).toFixed(1) + " %";
+                    document.getElementById('val-dust').innerText = (latest.sharp_dust || 0).toFixed(2) + " mg/m³";
+
+                    // Update Tabel Log (Maksimal 10 Baris)
+                    const tableBody = document.getElementById('log-table-body');
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td class="px-4 py-3">${row.time}</td>
+                                <td class="px-4 py-3 font-medium text-gray-900">${row.device || 'unknown'}</td>
+                                <td class="px-4 py-3">${(row.dht_temp || 0).toFixed(1)}</td>
+                                <td class="px-4 py-3">${(row.dht_hum || 0).toFixed(1)}</td>
+                                <td class="px-4 py-3">${(row.sharp_dust || 0).toFixed(2)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Update Grafik (Membalik urutan agar data lama di kiri, baru di kanan)
+                    const chartData = [...data].reverse();
+                    telemetryChart.data.labels = chartData.map(d => {
+                        // Memotong string waktu untuk hanya menampilkan Jam:Menit:Detik
+                        const parts = d.time.split(' ');
+                        return parts.length > 1 ? parts[1] : d.time;
+                    });
+                    telemetryChart.data.datasets[0].data = chartData.map(d => d.dht_temp);
+                    telemetryChart.data.datasets[1].data = chartData.map(d => d.dht_hum);
+                    telemetryChart.data.datasets[2].data = chartData.map(d => d.sharp_dust);
+                    telemetryChart.update();
+                }
+            } catch (error) {
+                console.error("Gagal menarik data dari API:", error);
+                document.getElementById('live-indicator').classList.replace('bg-emerald-500', 'bg-red-500');
+                document.getElementById('live-indicator').classList.remove('animate-pulse');
+                document.getElementById('live-text').innerText = "Koneksi Terputus";
+            }
+        }
+
+        // Panggil pertama kali, lalu jalankan setiap 5 detik
+        fetchRealTimeData();
+        setInterval(fetchRealTimeData, 5000);
+
+        // Handler OTA (Tetap Statis)
         function handleFileSelect(input) {
             if (input.files && input.files[0]) {
                 document.getElementById('file-label').innerText = `Berkas dipilih: ${input.files[0].name}`;
