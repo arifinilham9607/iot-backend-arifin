@@ -1,6 +1,7 @@
 import os
 import json
 import threading
+import uuid
 from flask import Flask, jsonify
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
@@ -10,6 +11,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 CORS(app)
 
+# Konfigurasi InfluxDB
 INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN")
 INFLUX_ORG = "ITS"
@@ -19,6 +21,7 @@ influx_client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_OR
 write_api = influx_client.write_api(write_options=SYNCHRONOUS)
 query_api = influx_client.query_api()
 
+# Konfigurasi MQTT
 BROKER = "broker.hivemq.com"
 PORT = 8883
 TOPIC = "dt/arifin-its-2026/telemetry"
@@ -34,9 +37,17 @@ def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode('utf-8'))
         point = Point("environment_monitoring").tag("device", data.get("device_id", "unknown"))
-        for sensor in data.get("data", []):
-            point.field(sensor.get("sensor"), float(sensor.get("value")))
         
+        # Validasi aman untuk nilai sensor null / None
+        for sensor in data.get("data", []):
+            val = sensor.get("value")
+            sensor_name = sensor.get("sensor")
+            if val is not None and sensor_name is not None:
+                try:
+                    point.field(sensor_name, float(val))
+                except (ValueError, TypeError):
+                    pass
+
         if INFLUX_TOKEN:
             write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
             print(f" -> [INFLUXDB] Data Seq {data.get('seq_num')} disimpan!", flush=True)
@@ -44,7 +55,9 @@ def on_message(client, userdata, msg):
         print(f"[ERROR] {e}", flush=True)
 
 def start_mqtt():
-    mqtt_client = mqtt.Client(client_id="Python-Render-API")
+    # Menggunakan suffix UUID acak agar tidak bentrok ID antar-worker Gunicorn
+    unique_client_id = f"Python-Render-API-{uuid.uuid4().hex[:6]}"
+    mqtt_client = mqtt.Client(client_id=unique_client_id)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
     mqtt_client.tls_set()
@@ -52,7 +65,7 @@ def start_mqtt():
     mqtt_client.connect(BROKER, PORT, 60)
     mqtt_client.loop_forever()
 
-# Inisialisasi Thread MQTT di tingkat teratas agar terbaca oleh Gunicorn
+# Inisialisasi Thread MQTT
 mqtt_thread = threading.Thread(target=start_mqtt)
 mqtt_thread.daemon = True
 mqtt_thread.start()
