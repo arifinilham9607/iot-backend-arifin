@@ -2,6 +2,7 @@ import os
 import json
 import threading
 import uuid
+from datetime import timedelta
 from flask import Flask, jsonify
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
@@ -55,7 +56,6 @@ def on_message(client, userdata, msg):
         print(f"[ERROR] {e}", flush=True)
 
 def start_mqtt():
-    # Menggunakan suffix UUID acak agar tidak bentrok ID antar-worker Gunicorn
     unique_client_id = f"Python-Render-API-{uuid.uuid4().hex[:6]}"
     mqtt_client = mqtt.Client(client_id=unique_client_id)
     mqtt_client.on_connect = on_connect
@@ -90,8 +90,11 @@ def get_data():
         results = []
         for table in tables:
             for record in table.records:
+                # Konversi waktu UTC dari InfluxDB ke WIB (UTC + 7 jam)
+                wib_time = record.get_time() + timedelta(hours=7)
+                
                 results.append({
-                    "time": record.get_time().strftime("%Y-%m-%d %H:%M:%S"),
+                    "time": wib_time.strftime("%Y-%m-%d %H:%M:%S"),
                     "device": record.values.get("device"),
                     "dht_temp": record.values.get("dht_temp"),
                     "dht_hum": record.values.get("dht_hum"),
